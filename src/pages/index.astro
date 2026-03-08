@@ -658,9 +658,10 @@ import Layout from '../layouts/Layout.astro';
         let width, height;
         let particles = [];
 
-        // AJUSTES DE DENSIDAD Y OPACIDAD
-        const particleCount = 800;
-        const connectionDistance = 140;
+        // AJUSTES DE DENSIDAD Y OPACIDAD — menos partículas en mobile
+        const isMobile = window.innerWidth < 769;
+        const particleCount = isMobile ? 150 : 800;
+        const connectionDistance = isMobile ? 100 : 140;
 
         const palette = [
             '34, 197, 94',   // Verde
@@ -739,7 +740,20 @@ import Layout from '../layouts/Layout.astro';
 
         init();
         animate();
-        window.addEventListener('resize', resize);
+
+        let lastMobile = isMobile;
+        window.addEventListener('resize', () => {
+            resize();
+            const nowMobile = window.innerWidth < 769;
+            if (nowMobile !== lastMobile) {
+                lastMobile = nowMobile;
+                particles = [];
+                const newCount = nowMobile ? 150 : 800;
+                for (let i = 0; i < newCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+        });
     }
 
     // --- SCROLL REVEAL ---
